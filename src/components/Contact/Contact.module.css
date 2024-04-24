@@ -1,0 +1,24 @@
+
+.item {
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 10px;
+border: 2px solid black;
+border-radius: 5px;
+width: 300px;
+}
+
+btn {
+display: flex;
+padding: 5px 10px;
+
+/* width: 100px;
+height: 40px; */
+}
+
+.iconName {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}

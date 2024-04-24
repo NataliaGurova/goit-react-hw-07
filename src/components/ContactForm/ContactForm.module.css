@@ -1,0 +1,50 @@
+/* form.submitForm {
+  width: 374px;
+  height: 220px;
+} */
+
+.submitForm {
+  display: flex;
+  flex-direction: column;
+  padding: 20px 10px;
+  width: 350px;
+  border: 2px solid black;
+  border-radius: 5px;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;  
+  margin: 0 auto;
+  margin-top: 10px; 
+  /* border: none; */
+  border-radius: 8px;
+  box-shadow: 2px 4px 8px rgba(255, 255, 255, 0.7);
+  background-color: #ffffff;
+  transition: box-shadow 0.3s ease;
+
+}
+
+.btn:hover {
+  border-color: #ffffff;
+  box-shadow: 2px 4px 8px rgba(77, 69, 123, 0.7);
+}
+
+.error {
+  color: red;
+  font-size: small;
+}
+
+label {
+  font-size: 15px;
+}
+
+.numberLabel {
+  margin-top: 10px;
+}
+
+.userName, .numberName {
+  padding: 5px 10px;
+      font-size: 20px;
+}
