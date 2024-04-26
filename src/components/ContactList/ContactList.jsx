@@ -6,18 +6,18 @@ import css from "./ContactList.module.css"
 import { selectNameFilter } from "../../redux/filtersSlice"
 import { selectContacts } from "../../redux/contactsSlice"
 
-const ContactList = () => { 
+const ContactList = ({items}) => { 
   
-  const contacts = useSelector(selectContacts)
-  const filterName = useSelector(selectNameFilter)
+  // const contacts = useSelector(selectContacts)
+  // const filterName = useSelector(selectNameFilter)
 
-  const compareName = contacts.filter((contact) =>
-    contact.name.toLowerCase().includes(filterName.toLowerCase())
-  );
+  // const compareName = contacts.filter((contact) =>
+  //   contact.name.toLowerCase().includes(filterName.toLowerCase())
+  // );
 
   return (
     <ul className={css.list}>
-      {compareName.map((contact) => {
+      {items.map((contact) => {
           return (
             <li key={contact.id}>
               <Contact contact={contact} />

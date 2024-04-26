@@ -1,30 +1,29 @@
 Книга контактів
 
-Виконай рефакторинг коду твого застосунку «Книга контактів» із домашнього завдання третього модуля. Додай управління станом за допомогою бібліотеки Redux Toolkit, замість локального React стану.
+Бекенд
 
 
 
-
-
-Папки та файли
-
-Створи папку src/redux для зберігання файлів, пов'язаних із логікою Redux:
-
-store.js - файл створення стору
-contactsSlice.js - файл слайсу для контактів
-filtersSlice.js - файл слайсу для фільтрів
+Створи свій персональний бекенд для розробки за допомогою UI-сервісу mockapi.io. Зареєструйся використовуючи свій обліковий запис GitHub та обери безкоштовний план.
 
 
 
+Переглянь демо-відео, як створити бекенд-застосунок та конструктор ресурсу, щоб отримати ендпоінт /contacts.
 
-Початковий стан
+Форма стану
 
-Нехай початковий стан Redux виглядає наступним чином.
+
+
+Додай у стан Redux обробку індикатора завантаження та помилки HTTP-запитів. Для цього зміни форму стану слайсу контактів, додавши властивості loading та error.
+
+
 
 {
   contacts: {
-		items: []
-	},
+    items: [],
+    loading: false,
+    error: null
+  },
   filters: {
 		name: ""
 	}
@@ -32,158 +31,222 @@ filtersSlice.js - файл слайсу для фільтрів
 
 
 
-Тут ми виділимо два слайси - контакти (поле contacts) і фільтри (поле filters).
+Операції
 
 
 
-
-
-Слайс контактів
-
-У файлі contactsSlice.js оголоси слайс контактів, використовуючи функцію createSlice().
+В папці redux створи файл contactsOps.js для зберігання асинхронних генераторів екшенів.
 
 
 
-Екшени слайса для використання в dispatch:
-
-addContact - додавання нового контакту до властивості items
-deleteContact - видалення контакту за id з властивості items
+Використовуй функцію createAsyncThunk для оголошення операцій.
+Для виконання HTTP-запитів використай бібліотеку axios.
 
 
-Оголоси функції-селектори для використання в useSelector:
+Оголоси наступні операції:
 
-selectContacts - повертає список контактів з властивості items.
+fetchContacts - одержання масиву контактів (метод GET) запитом. Базовий тип екшену це рядок "contacts/fetchAll".
+addContact - додавання нового контакту (метод POST). Базовий тип екшену це рядок "contacts/addContact".
+deleteContact - видалення контакту по ID (метод DELETE). Базовий тип екшену це рядок "contacts/deleteContact".
 
 
-З файла слайса експортуй редюсер, а також його екшени і селектори.
-
-
+Для коректного опрацювання помилки HTTP-запиту в середині операцій, використай конструкцію try...catch, та у блоці catch поверни результат виклику методу thunkAPI.rejectWithValue.
 
 
 
-Слайс фільтра
-
-У файлі filtersSlice.js оголоси слайс фільтра, використовуючи функцію createSlice().
+Обробку усіх трьох екшенів (fulfilled, rejected, pending) та зміну даних у стані Redux зроби у властивості extraReducers слайсу контактів, а от властивість reducers з нього — прибери.
 
 
 
-Екшени слайса для використання в dispatch:
-
-changeFilter - зміна значення фільтра в властивості name
-
-
-Оголоси функції-селектори для використання в useSelector:
-
-selectNameFilter - повертає значення фільтра з властивості name.
-
-
-З файла слайса експортуй редюсер, а також його екшени і селектори.
+Мемоізація селекторів
 
 
 
-
-
-Бібліотека React Redux
-
-Зв'яжи React-компоненти з Redux-логікою за допомогою хуків useSelector та useDispatch бібліотеки React Redux.
+Після додавання властивостей loading та error у слайс контактів, виникне проблема оптимізаціі фільтрування контактів, так як вираз фільтрування буде виконуватись не тільки при зміні контактів або фільтру, а також при зміні loading та error.
 
 
 
-Усі компоненти, крім карточки контакту Contact у списку контактів ContactList, не повинні приймати жодних пропсів. Замість цього, компоненти мають використовувати хук useSelector та функції-селектори слайсів для отримання необхідних їм значень.
+Для вирішення цієї задачі:
+
+У файлі слайсу контактів contactsSlice.js створи та експортуй мемоізований селектор selectFilteredContacts за допомогою функції createSelector.
+Селектор повинен залежати від поточних масиву контактів і значення фільтра, та повертати відфільтрований масив контактів.
+Селектор selectFilteredContacts імпортується у компонент списка контактів ContactList.jsx та використовується у useSelector.
+
+
+Колекція контактів
 
 
 
-Для відправки екшенів компоненти використовують хук useDispatch та оголошені раніше екшени слайсів:
-
-Форма ContactsForm відправляє екшен додавання контакту при сабміті
-Карточка контакту Contact відправляє екшен видалення контакту при кліку по кнопці видалення
-Поле фільтра SearchBox відправляє екшен зміни фільтра при введенні в текстове поле
+Оскільки твоя колекція контактів тепер зберігається на бекенді, то:
 
 
 
+При завантаженні додатка запит на бекенд для отримання масиву контактів зроби саме в компоненті Арр.
+При створенні нового контакту додавати йому унікальний ідентифікатор більше не потрібно, це буде робити сам бекенд і повертати у відповідь об’єкт нового контакту.
+===============================================
+ContactsSLICE.js
 
-Бібліотека Redux Persist
+import { createSlice } from "@reduxjs/toolkit";
+import { fetchTasks } from "./operations";
 
-Використай бібліотеку Redux Persist для збереження масиву контактів у локальному сховищі.
+const tasksSlice = createSlice({
+  name: "tasks",
+  initialState: {
+    items: [],
+    isLoading: false,
+    error: null,
+  },
+  extraReducers: builder => {
+    builder
+      .addCase(fetchTasks.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchTasks.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.error = null;
+        state.items = action.payload;
+      })
+      .addCase(fetchTasks.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
+  },
+});
+
+export const tasksReducer = tasksSlice.reducer;
 
 
+---------------------------------
+APP
+ const dispatch = useDispatch();
+  const { items, isLoading, error } = useSelector(getTasks);
 
-У файлі store.js:
+  useEffect(() => {
+    dispatch(fetchTasks());
+  }, [dispatch]);
 
-Створи конфігурацію для збереження поля items зі слайса контактів.
-Використовуй persistReducer, щоб застосувати конфігурацію до редюсера слайса контактів.
-Використовуй persistStore для створення persistor для PersistGate.
-==============================
-    contactsSlisce
+----------------------------------
+=========================================
+Додавання контактів
 
-    
-import initialContacts from '../data/contacts.json'
+.addCase(addTask.pending, state => {
+        state.isLoading = true;
+      })
+      .addCase(addTask.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.error = null;
+        state.items.push(action.payload);
+      })
+      .addCase(addTask.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
 
-const initialState = initialContacts;
+------------------------------------------
+// src/components/TaskForm/TaskForm.jsx
 
-export const contactsReducer = (state = initialState, action) => {
-	switch (action.type) {
+import { useDispatch } from "react-redux";
+import { addTask } from "redux/operations";
 
-    case "contacts/addContact":
-      return [...state, action.payload];
-    
-    case "contacts/deleteContact":     
-      return state.filter((contact) => contact.id !== action.payload);
-  
-    default:
-      return state;      
+export const TaskForm = () => {
+  const dispatch = useDispatch();
+
+  const handleSubmit = event => {
+    event.preventDefault();
+    const form = event.target;
+    dispatch(addTask(event.target.elements.text.value));
+    form.reset();
+  };
+
+  // Решта коду компонента
+};
+
+------------------------------------------
+// src/redux/operations.js
+
+export const addTask = createAsyncThunk(
+  "tasks/addTask",
+  async (text, thunkAPI) => {
+    try {
+      const response = await axios.post("/tasks", { text });
+      return response.data;
+    } catch (e) {
+      return thunkAPI.rejectWithValue(e.message);
+    }
   }
-};
+);
+---------------------------------
+==========================================
+// src/redux/selectors.js
 
 
-export const addContact = (newContact) => {
-return {
-      type: "contacts/addContact",
-      payload: newContact,
-    }    
-};
-
-  
-export const deleteContact = (id) => {
-return {
-      type: "contacts/deleteContact",
-      payload: id,
-    }    
-};
-  
-export const selectContacts = (state) => state.contacts;
-
-=========================
-filtersSlice
+export const getTasks = state => state.tasks.items;
 
 
-const initialState = {
-		name: ""
-	};
+export const getIsLoading = state => state.tasks.isLoading;
 
-export const filtersReducer = (state = initialState, action) => {
-	switch (action.type) {
 
-    case "name/searchName":
-      return {
-        ...state,
-        name: action.payload
-      };
-    
-    // case "contacts/deleteContact":     
-    //   return state.filter((contact) => contact.id !== action.payload);
-  
-    default:
-      return state;      
+export const getError = state => state.tasks.error;
+
+
+export const getStatusFilter = state => state.filters.status;
+
+==========================================
+Видалення завдання
+
+.addCase(deleteTask.pending, state => {
+        state.isLoading = true;
+      })
+      .addCase(deleteTask.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.error = null;
+        const index = state.items.findIndex(
+          task => task.id === action.payload.id
+        );
+        state.items.splice(index, 1);
+      })
+      .addCase(deleteTask.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+
+----------------------------
+// src/redux/operations.js
+
+export const deleteTask = createAsyncThunk(
+  "tasks/deleteTask",
+  async (taskId, thunkAPI) => {
+    try {
+      const response = await axios.delete(`/tasks/${taskId}`);
+      return response.data;
+    } catch (e) {
+      return thunkAPI.rejectWithValue(e.message);
+    }
   }
+);
+--------------------------------
+// src/components/Task/Task.jsx
+
+import { useDispatch } from "react-redux";
+import { MdClose } from "react-icons/md";
+import { deleteTask } from "redux/operations";
+
+export const Task = ({ task }) => {
+  const dispatch = useDispatch();
+
+  const handleDelete = () => dispatch(deleteTask(task.id));
+
+  return (
+    <div>
+      <input type="checkbox" checked={task.completed} />
+      <p>{task.text}</p>
+      <button onClick={handleDelete}>
+        <MdClose size={24} />
+      </button>
+    </div>
+  );
 };
 
-export const changeFilter = (name) => {
-return {
-      type: "name/searchName",
-      payload: name,
-    }    
-};
 
-
-export const selectNameFilter = (state) => state.filters.name;
+============================
+state.items.filter((contact) => contact.id !== action.payload);
