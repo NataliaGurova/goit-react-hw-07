@@ -7,4 +7,12 @@
 
 .input {
   padding: 5px 10px;
+  border: none;
+  border-radius: 10px;
 }
+/* 
+
+input.userName, input.numberName {
+  border: none;
+  border-radius: 10px;
+} */

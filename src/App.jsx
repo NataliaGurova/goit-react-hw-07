@@ -1,5 +1,5 @@
 
-import './App.css'
+import css from './App.module.css'
 import ContactForm from "./components/ContactForm/ContactForm"
 import SearchBox from "./components/SearchBox/SearchBox"
 import ContactList from "./components/ContactList/ContactList"
@@ -15,18 +15,20 @@ function App() {
   const isLoading = useSelector(selectIsLoading)
   const error = useSelector(selectError)
   
-   useEffect(() => {
+  useEffect(() => {
     dispatch(fetchContacts());
   }, [dispatch]);
   
   return (
-    <div>
+    <div className={css.section}>
+    <div className={css.container}>
       <h1>Phonebook</h1>
       <ContactForm />
       <SearchBox />
       {isLoading && <b>Loading tasks...</b>}
       {error && <b>{error}</b>}
       {items.length > 0 && <ContactList items={items} />}
+      </div>
     </div>
   )
 }
